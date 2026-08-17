@@ -39,6 +39,7 @@ class ImportDataTrainingManager extends Component
         try {
             // Hapus data lama ketika mengunggah file baru (overwrite/timpa)
             DataTrainingRkas::truncate();
+            DataTraining::truncate();
             
             Excel::import(new DataTrainingRkasImport(), $this->file_rkas->getRealPath());
             $this->reset('file_rkas');
@@ -49,7 +50,7 @@ class ImportDataTrainingManager extends Component
             }
 
             session()->flash('success', 'Data RKAS baru berhasil diunggah!');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             session()->flash('error', 'Gagal mengimpor data RKAS: ' . $e->getMessage());
         }
     }
@@ -66,6 +67,7 @@ class ImportDataTrainingManager extends Component
         try {
             // Hapus data lama ketika mengunggah file baru (overwrite/timpa)
             DataTrainingBku::truncate();
+            DataTraining::truncate();
             
             Excel::import(new DataTrainingBkuImport(), $this->file_bku->getRealPath());
             $this->reset('file_bku');
@@ -76,7 +78,7 @@ class ImportDataTrainingManager extends Component
             }
 
             session()->flash('success', 'Data BKU baru berhasil diunggah!');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             session()->flash('error', 'Gagal mengimpor data BKU: ' . $e->getMessage());
         }
     }
@@ -133,8 +135,19 @@ class ImportDataTrainingManager extends Component
     public function render()
     {
         $countWajar = DataTraining::where('label', 'Wajar')->count();
+        if ($countWajar === 0 && DataTrainingBku::exists()) {
+            $countWajar = DataTrainingBku::whereIn('label_aktual', ['Wajar', 'wajar'])->count();
+        }
+
         $countTidakSesuai = DataTraining::whereIn('label', ['Tidak Sesuai', 'Menyimpang'])->count();
+        if ($countTidakSesuai === 0 && DataTrainingBku::exists()) {
+            $countTidakSesuai = DataTrainingBku::whereIn('label_aktual', ['Tidak Sesuai', 'Menyimpang', 'tidak sesuai', 'menyimpang'])->count();
+        }
+
         $countTotal = DataTraining::count();
+        if ($countTotal === 0) {
+            $countTotal = DataTrainingBku::count() ?: DataTrainingRkas::count();
+        }
 
         return view('livewire.klasifikasi.import-data-training-manager', compact('countWajar', 'countTidakSesuai', 'countTotal'))
             ->layout('components.layouts.app', ['header' => 'Unggah Data Latih']);

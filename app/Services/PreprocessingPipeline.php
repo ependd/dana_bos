@@ -79,15 +79,33 @@ class PreprocessingPipeline
     private array $labelEncoding = [];
 
     /**
+     * Alias method untuk memproses data training.
+     */
+    public function process(?string $tahun = null): Collection
+    {
+        return $this->processTrainingData($tahun);
+    }
+
+    /**
      * Proses data training: join RKAS+BKU, hitung fitur X1-X8, simpan ke tabel data_trainings.
      */
-    public function processTrainingData(string $tahun): Collection
+    public function processTrainingData(?string $tahun = null): Collection
     {
-        // Ambil data training RKAS & BKU
-        $rkasData = DataTrainingRkas::where('tahun', $tahun)->get();
-        $bkuData = DataTrainingBku::where('tahun', $tahun)->get();
+        $bkuQuery = DataTrainingBku::query();
+        $rkasQuery = DataTrainingRkas::query();
 
-        if ($rkasData->isEmpty() || $bkuData->isEmpty()) {
+        if ($tahun !== null) {
+            $bkuQuery->where('tahun', $tahun);
+            $rkasQuery->where('tahun', $tahun);
+            DataTraining::where('tahun', $tahun)->delete();
+        } else {
+            DataTraining::truncate();
+        }
+
+        $bkuData = $bkuQuery->get();
+        $rkasData = $rkasQuery->get();
+
+        if ($bkuData->isEmpty() || $rkasData->isEmpty()) {
             return collect();
         }
 
@@ -96,9 +114,6 @@ class PreprocessingPipeline
 
         // Ambil semua kode_rekening unik dari RKAS untuk menentukan X8
         $rkasKodeRekening = $rkasData->pluck('kode_rekening')->unique()->toArray();
-
-        // Hapus data training olahan lama untuk tahun ini agar tidak duplikat saat impor ulang
-        DataTraining::where('tahun', $tahun)->delete();
 
         $results = collect();
 
@@ -119,12 +134,15 @@ class PreprocessingPipeline
             // Hitung fitur X1 - X8
             $features = $this->calculateFeatures($bku, $rkas, $rkasKodeRekening);
 
-            // Simpan sebagai record baru (menggunakan create agar transaksi bernilai sama tetap tersimpan)
+            $rawLabel = trim((string)($bku->label_aktual ?? 'Wajar'));
+            $label = (strcasecmp($rawLabel, 'Menyimpang') === 0 || strcasecmp($rawLabel, 'Tidak Sesuai') === 0) ? 'Tidak Sesuai' : 'Wajar';
+
+            // Simpan sebagai record baru (1 baris per transaksi BKU)
             $training = DataTraining::create(
                 array_merge($features, [
-                    'tahun' => $tahun,
+                    'tahun' => $bku->tahun ?? $tahun ?? '2024',
                     'kode_rekening' => $bku->kode_rekening,
-                    'label' => $bku->label_aktual,
+                    'label' => $label,
                 ])
             );
 

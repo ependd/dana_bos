@@ -1,4 +1,25 @@
 <div class="space-y-6">
+
+    <!-- Flash Notifications -->
+    @if(session()->has('success'))
+    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-sm font-medium">{{ session('success') }}</span>
+        </div>
+        <button type="button" @click="show = false" class="text-emerald-600 hover:text-emerald-800 text-xs ml-4">✕</button>
+    </div>
+    @endif
+
+    @if(session()->has('error'))
+    <div x-data="{ show: true }" x-show="show" class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-sm font-medium">{{ session('error') }}</span>
+        </div>
+        <button type="button" @click="show = false" class="text-rose-600 hover:text-rose-800 text-xs ml-4">✕</button>
+    </div>
+    @endif
     
     <!-- Status Overview Stat Cards (Data Wajar, Data Tidak Sesuai, Jumlah Data) -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -75,5 +96,16 @@
         </x-card>
 
     </div>
+
+    @if($countTotal > 0)
+    <div class="flex justify-end pt-2">
+        <button type="button" 
+                @click="confirmDelete('Bersihkan Semua Data Training', 'Apakah Anda yakin ingin menghapus seluruh data training yang telah diunggah?', () => $wire.clearAllData())"
+                class="px-4 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 rounded-xl border border-rose-200 dark:border-rose-900 transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <span>Bersihkan Semua Data Training</span>
+        </button>
+    </div>
+    @endif
 
 </div>

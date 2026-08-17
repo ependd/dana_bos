@@ -250,10 +250,13 @@ class WhaleOptimization
                 $predicted = array_search(max($posteriors), $posteriors);
                 $actual = $sample['label'] ?? '';
 
-                if ($actual === 'Tidak Sesuai' && $predicted === 'Tidak Sesuai') $tp++;
-                elseif ($actual === 'Wajar' && $predicted === 'Wajar') $tn++;
-                elseif ($actual === 'Wajar' && $predicted === 'Tidak Sesuai') $fp++;
-                elseif ($actual === 'Tidak Sesuai' && $predicted === 'Wajar') $fn++;
+                $isAnomalyActual = (strcasecmp((string)$actual, 'Tidak Sesuai') === 0 || strcasecmp((string)$actual, 'Menyimpang') === 0);
+                $isAnomalyPred = (strcasecmp((string)$predicted, 'Tidak Sesuai') === 0 || strcasecmp((string)$predicted, 'Menyimpang') === 0);
+
+                if ($isAnomalyActual && $isAnomalyPred) $tp++;
+                elseif (!$isAnomalyActual && !$isAnomalyPred) $tn++;
+                elseif (!$isAnomalyActual && $isAnomalyPred) $fp++;
+                elseif ($isAnomalyActual && !$isAnomalyPred) $fn++;
             }
 
             $accuracies[] = ($tp + $tn) / max(($tp + $tn + $fp + $fn), 1);
