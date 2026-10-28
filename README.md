@@ -25,7 +25,7 @@ Dikembangkan sebagai skripsi Sistem Informasi, studi kasus **SMPN 40 Kota Bekasi
 |---|---|
 | Algoritma | Mixed Naive Bayes (Categorical, Gaussian, Bernoulli) |
 | Optimasi | Whale Optimization Algorithm untuk seleksi fitur |
-| Fitur terpilih | 5 fitur dari 7 fitur kandidat |
+| Fitur terpilih | 5 fitur dari 7 fitur kandidat, fitur dapat berbeda mengingat WOA bersifat stokastik  |
 | Dataset | 150 data, disusun mengikuti pola BKU dan RKAS dengan aturan bisnis ketat |
 | Validasi | K-Fold Cross Validation (K = 5) |
 | Akurasi | Naive Bayes 86,67% menjadi 91,76% setelah optimasi WOA |
@@ -34,10 +34,10 @@ Catatan: WOA bersifat stokastik, sehingga fitur terpilih dan hasil akurasi dapat
 
 ## Screenshot
 
-> Ganti path di bawah dengan screenshot asli (simpan di `docs/screenshots/`).
 
 ### Dashboard
-![Dashboard](docs/screenshots/dashboard.png)
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/6c6700d3-9d4c-408d-a110-06b15a884294" />
+
 
 ### Form Pengajuan Kebutuhan
 ![Pengajuan](docs/screenshots/pengajuan.png)
