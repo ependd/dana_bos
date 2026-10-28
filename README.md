@@ -40,10 +40,13 @@ Catatan: WOA bersifat stokastik, sehingga fitur terpilih dan hasil akurasi dapat
 
 
 ### Form Pengajuan Kebutuhan
-![Pengajuan](docs/screenshots/pengajuan.png)
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/1eeef461-eed9-4412-b8b4-edb1f13f64a3" />
+
 
 ### Hasil Klasifikasi
-![Klasifikasi](docs/screenshots/klasifikasi.png)
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/015414cd-749c-46c6-b346-91afd59a05b5" />
+
 
 ### Pelatihan Model
-![Pelatihan](docs/screenshots/pelatihan.png)
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/d2dcfac2-d2d5-41e7-9405-77d3a1de77af" />
+
